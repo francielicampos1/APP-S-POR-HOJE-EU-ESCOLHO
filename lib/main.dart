@@ -15,7 +15,7 @@ void main() async {
   usePathUrlStrategy();
 
   await FlutterFlowTheme.initialize();
-  await MobileAds.instance.initialize();
+  MobileAds.instance.initialize();
 
   runApp(MyApp());
 }
