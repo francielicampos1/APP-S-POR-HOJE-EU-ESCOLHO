@@ -13,16 +13,14 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   usePathUrlStrategy();
 
-  // Não bloquear a primeira renderização do Flutter esperando o
-  // SharedPreferences. A preferência de tema é opcional e o getter
-  // FlutterFlowTheme.themeMode funciona com _prefs nulo.
-  FlutterFlowTheme.initialize();
-
-  runApp(MyApp());
+  // A inicialização de SharedPreferences não pode impedir a primeira tela.
+  // Ela será feita depois que o Flutter já tiver desenhado o aplicativo.
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  // This widget is the root of the application.
+  const MyApp({super.key});
+
   @override
   State<MyApp> createState() => _MyAppState();
 
@@ -31,10 +29,30 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = FlutterFlowTheme.themeMode;
+  ThemeMode _themeMode = ThemeMode.system;
 
   late AppStateNotifier _appStateNotifier;
   late GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _appStateNotifier = AppStateNotifier.instance;
+    _router = createRouter(_appStateNotifier);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await FlutterFlowTheme.initialize();
+        if (!mounted) return;
+        safeSetState(() {
+          _themeMode = FlutterFlowTheme.themeMode;
+        });
+      } catch (_) {
+        // Preferir o tema do sistema caso o armazenamento local falhe.
+      }
+    });
+  }
+
   String getRoute([RouteMatch? routeMatch]) {
     final RouteMatch lastMatch =
         routeMatch ?? _router.routerDelegate.currentConfiguration.last;
@@ -49,14 +67,6 @@ class _MyAppState extends State<MyApp> {
           .map((e) => getRoute(e))
           .toList();
 
-  @override
-  void initState() {
-    super.initState();
-
-    _appStateNotifier = AppStateNotifier.instance;
-    _router = createRouter(_appStateNotifier);
-  }
-
   void setThemeMode(ThemeMode mode) => safeSetState(() {
         _themeMode = mode;
         FlutterFlowTheme.saveThemeMode(mode);
@@ -67,7 +77,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Só por Hoje, Eu Escolho',
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
