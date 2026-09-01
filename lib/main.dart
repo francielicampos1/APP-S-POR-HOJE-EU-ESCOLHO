@@ -8,19 +8,21 @@ import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/nav/nav.dart';
 import 'index.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   usePathUrlStrategy();
 
-  await FlutterFlowTheme.initialize();
-  // Anúncios desligados temporariamente pra testar se o app abre sem eles.
+  // Não bloquear a primeira renderização do Flutter esperando o
+  // SharedPreferences. A preferência de tema é opcional e o getter
+  // FlutterFlowTheme.themeMode funciona com _prefs nulo.
+  FlutterFlowTheme.initialize();
 
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  // This widget is the root of your application.
+  // This widget is the root of the application.
   @override
   State<MyApp> createState() => _MyAppState();
 
@@ -46,6 +48,7 @@ class _MyAppState extends State<MyApp> {
       _router.routerDelegate.currentConfiguration.matches
           .map((e) => getRoute(e))
           .toList();
+
   @override
   void initState() {
     super.initState();
@@ -63,13 +66,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'New Project',
+      title: 'Só por Hoje, Eu Escolho',
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en', '')],
+      supportedLocales: const [Locale('pt', 'BR')],
       theme: ThemeData(
         brightness: Brightness.light,
         useMaterial3: false,
