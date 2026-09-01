@@ -5,7 +5,6 @@ import '/components/diary_entry/diary_entry_widget.dart';
 import '/components/text_field/text_field_widget.dart';
 import '/custom_code/actions/diary_store.dart';
 import '/custom_code/actions/diary_entry_form_sheet.dart';
-import '/custom_code/actions/small_ad_footer.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -476,10 +475,6 @@ class _MeuDiRioWidgetState extends State<MeuDiRioWidget> {
                                     ),
                                   ),
                                 ].divide(SizedBox(height: 16.0)),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: SmallAdFooter(),
                               ),
                             ].divide(SizedBox(height: 24.0)),
                           ),

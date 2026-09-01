@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -15,7 +14,7 @@ void main() async {
   usePathUrlStrategy();
 
   await FlutterFlowTheme.initialize();
-  MobileAds.instance.initialize();
+  // Anúncios desligados temporariamente pra testar se o app abre sem eles.
 
   runApp(MyApp());
 }

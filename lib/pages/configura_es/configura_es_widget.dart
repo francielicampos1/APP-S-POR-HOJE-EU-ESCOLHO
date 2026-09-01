@@ -6,7 +6,6 @@ import '/components/settings_group_child/settings_group_child_widget.dart';
 import '/components/settings_group_child2/settings_group_child2_widget.dart';
 import '/components/settings_group_child3/settings_group_child3_widget.dart';
 import '/custom_code/actions/local_profile_store.dart';
-import '/custom_code/actions/small_ad_footer.dart';
 import '/custom_code/actions/pix_copia_cola.dart';
 import 'package:flutter/services.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -514,10 +513,6 @@ class _ConfiguraEsWidgetState extends State<ConfiguraEsWidget> {
                                     ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: SmallAdFooter(),
                               ),
                             ].divide(SizedBox(height: 24.0)),
                           ),
