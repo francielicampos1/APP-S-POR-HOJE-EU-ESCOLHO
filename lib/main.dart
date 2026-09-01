@@ -1,98 +1,51 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
-import 'flutter_flow/flutter_flow_util.dart';
-import 'flutter_flow/nav/nav.dart';
-import 'index.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  GoRouter.optionURLReflectsImperativeAPIs = true;
-  usePathUrlStrategy();
-
-  // A inicialização de SharedPreferences não pode impedir a primeira tela.
-  // Ela será feita depois que o Flutter já tiver desenhado o aplicativo.
-  runApp(const MyApp());
+  runApp(const StartupTestApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-
-  static _MyAppState of(BuildContext context) =>
-      context.findAncestorStateOfType<_MyAppState>()!;
-}
-
-class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  late AppStateNotifier _appStateNotifier;
-  late GoRouter _router;
-
-  @override
-  void initState() {
-    super.initState();
-    _appStateNotifier = AppStateNotifier.instance;
-    _router = createRouter(_appStateNotifier);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        await FlutterFlowTheme.initialize();
-        if (!mounted) return;
-        safeSetState(() {
-          _themeMode = FlutterFlowTheme.themeMode;
-        });
-      } catch (_) {
-        // Preferir o tema do sistema caso o armazenamento local falhe.
-      }
-    });
-  }
-
-  String getRoute([RouteMatch? routeMatch]) {
-    final RouteMatch lastMatch =
-        routeMatch ?? _router.routerDelegate.currentConfiguration.last;
-    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
-        ? lastMatch.matches
-        : _router.routerDelegate.currentConfiguration;
-    return matchList.uri.path;
-  }
-
-  List<String> getRouteStack() =>
-      _router.routerDelegate.currentConfiguration.matches
-          .map((e) => getRoute(e))
-          .toList();
-
-  void setThemeMode(ThemeMode mode) => safeSetState(() {
-        _themeMode = mode;
-        FlutterFlowTheme.saveThemeMode(mode);
-      });
+class StartupTestApp extends StatelessWidget {
+  const StartupTestApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Só por Hoje, Eu Escolho',
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('pt', 'BR')],
-      theme: ThemeData(
-        brightness: Brightness.light,
-        useMaterial3: false,
+      home: Scaffold(
+        backgroundColor: const Color(0xFFFCF9F4),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(
+                Icons.check_circle_outline_rounded,
+                color: Color(0xFF2D6A4F),
+                size: 72,
+              ),
+              SizedBox(height: 20),
+              Text(
+                'TESTE DE ABERTURA',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B2E26),
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Se você está vendo esta tela,\no Flutter abriu corretamente.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF5C6B64),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: false,
-      ),
-      themeMode: _themeMode,
-      routerConfig: _router,
     );
   }
 }
