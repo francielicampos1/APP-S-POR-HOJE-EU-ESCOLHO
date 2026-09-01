@@ -13,8 +13,6 @@ void main() {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   usePathUrlStrategy();
 
-  // A inicialização de SharedPreferences não pode impedir a primeira tela.
-  // Ela será feita depois que o Flutter já tiver desenhado o aplicativo.
   runApp(const MyApp());
 }
 
@@ -30,16 +28,36 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.system;
-
-  late AppStateNotifier _appStateNotifier;
-  late GoRouter _router;
+  AppStateNotifier? _appStateNotifier;
+  GoRouter? _router;
+  Object? _startupError;
 
   @override
   void initState() {
     super.initState();
-    _appStateNotifier = AppStateNotifier.instance;
-    _router = createRouter(_appStateNotifier);
 
+    // Primeiro deixa o Flutter desenhar uma tela própria. Só depois criamos
+    // o GoRouter, para que um erro na configuração de rotas não deixe o
+    // Android preso na tela de splash/NormalTheme.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      try {
+        final notifier = AppStateNotifier.instance;
+        final router = createRouter(notifier);
+        if (!mounted) return;
+        safeSetState(() {
+          _appStateNotifier = notifier;
+          _router = router;
+        });
+      } catch (error) {
+        if (!mounted) return;
+        safeSetState(() {
+          _startupError = error;
+        });
+      }
+    });
+
+    // SharedPreferences também fica fora do caminho crítico da primeira tela.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
         await FlutterFlowTheme.initialize();
@@ -48,22 +66,23 @@ class _MyAppState extends State<MyApp> {
           _themeMode = FlutterFlowTheme.themeMode;
         });
       } catch (_) {
-        // Preferir o tema do sistema caso o armazenamento local falhe.
+        // Mantém o tema do sistema se o armazenamento local falhar.
       }
     });
   }
 
   String getRoute([RouteMatch? routeMatch]) {
+    final router = _router!;
     final RouteMatch lastMatch =
-        routeMatch ?? _router.routerDelegate.currentConfiguration.last;
+        routeMatch ?? router.routerDelegate.currentConfiguration.last;
     final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
         ? lastMatch.matches
-        : _router.routerDelegate.currentConfiguration;
+        : router.routerDelegate.currentConfiguration;
     return matchList.uri.path;
   }
 
   List<String> getRouteStack() =>
-      _router.routerDelegate.currentConfiguration.matches
+      _router!.routerDelegate.currentConfiguration.matches
           .map((e) => getRoute(e))
           .toList();
 
@@ -72,8 +91,34 @@ class _MyAppState extends State<MyApp> {
         FlutterFlowTheme.saveThemeMode(mode);
       });
 
+  ThemeData _lightTheme() => ThemeData(
+        brightness: Brightness.light,
+        useMaterial3: false,
+      );
+
+  ThemeData _darkTheme() => ThemeData(
+        brightness: Brightness.dark,
+        useMaterial3: false,
+      );
+
   @override
   Widget build(BuildContext context) {
+    final router = _router;
+
+    if (router == null) {
+      final error = _startupError;
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Só por Hoje, Eu Escolho',
+        theme: _lightTheme(),
+        darkTheme: _darkTheme(),
+        themeMode: _themeMode,
+        home: error == null
+            ? const _StartupScreen()
+            : _StartupErrorScreen(error: error),
+      );
+    }
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Só por Hoje, Eu Escolho',
@@ -83,16 +128,102 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('pt', 'BR')],
-      theme: ThemeData(
-        brightness: Brightness.light,
-        useMaterial3: false,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        useMaterial3: false,
-      ),
+      theme: _lightTheme(),
+      darkTheme: _darkTheme(),
       themeMode: _themeMode,
-      routerConfig: _router,
+      routerConfig: router,
+    );
+  }
+}
+
+class _StartupScreen extends StatelessWidget {
+  const _StartupScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFCF9F4),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.self_improvement_rounded,
+              size: 56,
+              color: Color(0xFF2D6A4F),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Só por hoje, EU escolho.',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1B2E26),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Preparando o aplicativo...',
+              style: TextStyle(color: Color(0xFF5C6B64)),
+            ),
+            const SizedBox(height: 24),
+            const SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StartupErrorScreen extends StatelessWidget {
+  const _StartupErrorScreen({required this.error});
+
+  final Object error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFFCF9F4),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    size: 56,
+                    color: Color(0xFFE07A5F),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Não foi possível iniciar a navegação.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1B2E26),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SelectableText(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Color(0xFF5C6B64)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
