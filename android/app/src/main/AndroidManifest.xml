@@ -43,6 +43,14 @@
               android:name="io.flutter.embedding.android.EnableImpeller"
               android:value="false"
               />
+            <!-- Segunda correção pra tela sólida em branco: desliga um jeito de
+                 desenhar a tela (HardwareBuffer/SurfaceControl) que tem bug
+                 conhecido em muitos aparelhos Android reais e causa exatamente
+                 esse sintoma (tela de uma cor só, sem nada desenhado em cima). -->
+            <meta-data
+              android:name="io.flutter.embedding.android.DisableSurfaceControl"
+              android:value="true"
+              />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
