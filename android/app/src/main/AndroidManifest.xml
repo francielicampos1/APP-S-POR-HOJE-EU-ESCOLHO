@@ -35,6 +35,14 @@
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+            <!-- Desliga o Impeller (motor gráfico novo do Flutter) e volta pro
+                 motor antigo (Skia). Teste pra ver se resolve a tela verde
+                 sólida na abertura — é um bug conhecido do Impeller em alguns
+                 celulares com driver de GPU incompatível. -->
+            <meta-data
+              android:name="io.flutter.embedding.android.EnableImpeller"
+              android:value="false"
+              />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
