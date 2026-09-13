@@ -37,7 +37,7 @@ private val preferenciasContato = listOf("WhatsApp", "Ligação")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProtecaoScreen(appState: AppState, aoVoltar: () -> Unit, aoIrParaGatilhos: () -> Unit, aoIrParaMeuPlano: () -> Unit) {
+fun ProtecaoScreen(appState: AppState, aoVoltar: () -> Unit, aoIrParaGatilhos: () -> Unit) {
     val context = LocalContext.current
     val protecaoSalva by appState.formasDeProtecao
     var afastamento by remember { mutableStateOf(protecaoSalva.afastamento) }
@@ -153,16 +153,6 @@ fun ProtecaoScreen(appState: AppState, aoVoltar: () -> Unit, aoIrParaGatilhos: (
                 Text("Adicionar pessoa de confiança")
             }
 
-            Spacer(Modifier.height(28.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(20.dp))
-
-            LinkParaOutraTela(
-                emoji = "🌱",
-                titulo = "Meu plano de proteção",
-                legenda = "Seu motivo, o que quer recuperar e o passo a passo completo estão em Meu Plano.",
-                aoClicar = aoIrParaMeuPlano
-            )
             Spacer(Modifier.height(32.dp))
         }
     }
@@ -193,21 +183,6 @@ private fun LinhaCheckbox(texto: String, marcado: Boolean, aoMudar: () -> Unit) 
     Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         Checkbox(checked = marcado, onCheckedChange = { aoMudar() })
         Text(texto, style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
-@Composable
-private fun LinkParaOutraTela(emoji: String, titulo: String, legenda: String, aoClicar: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp), onClick = aoClicar) {
-        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(emoji, style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.width(14.dp))
-            Column(Modifier.weight(1f)) {
-                Text(titulo, style = MaterialTheme.typography.titleMedium)
-                Text(legenda, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f))
-            }
-            Icon(Icons.Filled.ChevronRight, contentDescription = null)
-        }
     }
 }
 

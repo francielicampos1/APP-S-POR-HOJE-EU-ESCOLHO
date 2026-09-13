@@ -147,8 +147,7 @@ private fun TelasPrincipais(appState: AppState) {
                 ProtecaoScreen(
                     appState = appState,
                     aoVoltar = { navController.popBackStack() },
-                    aoIrParaGatilhos = { irParaAbaPrincipal(Tela.Gatilhos.rota) },
-                    aoIrParaMeuPlano = { irParaAbaPrincipal(Tela.MeuPlano.rota) }
+                    aoIrParaGatilhos = { irParaAbaPrincipal(Tela.Gatilhos.rota) }
                 )
             }
             composable(TelaSecundaria.AjudarAlguem.rota) {
