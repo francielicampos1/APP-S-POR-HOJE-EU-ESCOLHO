@@ -10,20 +10,15 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 
 /**
- * ID de anúncio de BANNER de TESTE, oficial do Google — sempre retorna um anúncio de exemplo,
- * nunca um anúncio real, então é seguro deixar aqui durante o desenvolvimento.
+ * Ad Unit ID real do banner, da conta AdMob de Francieli (admob.google.com).
  *
- * IMPORTANTE: antes de publicar o app de verdade na Play Store, troque por um Ad Unit ID
- * real, criado na sua conta AdMob (admob.google.com) — um ID diferente pode ser criado
- * pra cada tela, se você quiser medir o desempenho de cada uma separadamente.
- *
- * Na sua conta AdMob, configure também o bloqueio de categorias de anúncio pra excluir:
- * Apostas e jogos de azar, Crédito e empréstimos — em Bloqueios > Categorias de conteúdo.
+ * Lembrete: configure o bloqueio de categorias de anúncio pra excluir Apostas e jogos de
+ * azar, Crédito e empréstimos — em Bloqueios > Categorias de conteúdo, na conta AdMob.
  */
-private const val ID_BANNER_TESTE = "ca-app-pub-3940256099942544/6300978111"
+private const val ID_BANNER_PRODUCAO = "ca-app-pub-7519869927873123/5969652096"
 
 @Composable
-fun BannerAnuncio(modifier: Modifier = Modifier, idAnuncio: String = ID_BANNER_TESTE) {
+fun BannerAnuncio(modifier: Modifier = Modifier, idAnuncio: String = ID_BANNER_PRODUCAO) {
     val context = LocalContext.current
     AndroidView(
         modifier = modifier.fillMaxWidth(),

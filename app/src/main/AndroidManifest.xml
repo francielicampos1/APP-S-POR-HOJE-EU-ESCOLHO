@@ -19,11 +19,9 @@
         android:theme="@style/Theme.SoPorHoje"
         android:supportsRtl="true">
 
-        <!-- ID de TESTE oficial do Google AdMob. Trocar pelo App ID real da sua conta
-             AdMob antes de publicar (Google > Console AdMob > seu app > configurações). -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-7519869927873123~6459150414" />
 
         <activity
             android:name=".MainActivity"
