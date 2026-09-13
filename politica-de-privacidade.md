@@ -38,4 +38,4 @@ Esta política pode ser atualizada eventualmente. Recomendamos revisá-la period
 
 ## Contato
 
-Dúvidas sobre esta política podem ser enviadas para: francielicampos.assistente@gmail.com
+Dúvidas sobre esta política podem ser enviadas para: francielicampos1@gmail.com
