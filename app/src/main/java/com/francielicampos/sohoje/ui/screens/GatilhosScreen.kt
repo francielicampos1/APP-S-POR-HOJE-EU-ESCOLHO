@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -104,7 +107,16 @@ fun GatilhosScreen(appState: AppState, aoIrParaProtecao: () -> Unit) {
         appState.gatilhos.filter { it.categoria == "Pensamento" && it.descricao !in opcoesPensamento }.forEach { registro ->
             Spacer(Modifier.height(6.dp))
             Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp)) {
-                Text(registro.descricao, Modifier.padding(14.dp))
+                Row(
+                    Modifier.padding(14.dp).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(registro.descricao, Modifier.weight(1f))
+                    IconButton(onClick = { appState.removerGatilho(registro.id) }) {
+                        Icon(Icons.Filled.Close, contentDescription = "Excluir")
+                    }
+                }
             }
         }
         Spacer(Modifier.height(8.dp))

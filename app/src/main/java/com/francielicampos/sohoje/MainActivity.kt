@@ -127,8 +127,8 @@ private fun TelasPrincipais(appState: AppState) {
                 EstouComVontadeScreen(
                     appState = appState,
                     aoVoltar = { navController.popBackStack() },
-                    aoIrParaGatilhos = { irParaAbaPrincipal(Tela.Gatilhos.rota) },
-                    aoIrParaAjuda = { irParaAbaPrincipal(Tela.Ajuda.rota) }
+                    aoIrParaGatilhos = { navController.navigate(Tela.Gatilhos.rota) },
+                    aoIrParaAjuda = { navController.navigate(Tela.Ajuda.rota) }
                 )
             }
             composable(TelaSecundaria.Progresso.rota) {
@@ -147,19 +147,19 @@ private fun TelasPrincipais(appState: AppState) {
                 ProtecaoScreen(
                     appState = appState,
                     aoVoltar = { navController.popBackStack() },
-                    aoIrParaGatilhos = { irParaAbaPrincipal(Tela.Gatilhos.rota) }
+                    aoIrParaGatilhos = { navController.navigate(Tela.Gatilhos.rota) }
                 )
             }
             composable(TelaSecundaria.AjudarAlguem.rota) {
                 AjudarAlguemScreen(
                     aoVoltar = { navController.popBackStack() },
-                    aoIrParaAjuda = { irParaAbaPrincipal(Tela.Ajuda.rota) }
+                    aoIrParaAjuda = { navController.navigate(Tela.Ajuda.rota) }
                 )
             }
             composable(TelaSecundaria.EstouBem.rota) {
                 EstouBemScreen(
                     aoVoltar = { navController.popBackStack() },
-                    aoIrParaDiario = { irParaAbaPrincipal(Tela.Diario.rota) },
+                    aoIrParaDiario = { navController.navigate(Tela.Diario.rota) },
                     aoIrParaProgresso = { navController.navigate(TelaSecundaria.Progresso.rota) }
                 )
             }

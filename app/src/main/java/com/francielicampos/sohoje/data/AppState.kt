@@ -190,6 +190,20 @@ class AppState(private val db: AppDatabase, private val escopo: CoroutineScope) 
         escopo.launch { db.diarioDao().inserir(EntradaDiarioEntity(id, millis, texto, humor)) }
     }
 
+    fun editarEntradaDiario(id: Long, texto: String, humor: String) {
+        val indice = entradasDiario.indexOfFirst { it.id == id }
+        if (indice == -1) return
+        val entradaAtual = entradasDiario[indice]
+        entradasDiario[indice] = entradaAtual.copy(texto = texto, humor = humor)
+        val millis = entradaAtual.data.atZone(zonaLocal).toInstant().toEpochMilli()
+        escopo.launch { db.diarioDao().atualizar(EntradaDiarioEntity(id, millis, texto, humor)) }
+    }
+
+    fun removerEntradaDiario(id: Long) {
+        entradasDiario.removeAll { it.id == id }
+        escopo.launch { db.diarioDao().remover(id) }
+    }
+
     fun registrarDiaResistido(valorNaoGasto: Double) {
         diasConsecutivosSemApostar.value += 1
         valorTotalNaoGasto.value += valorNaoGasto

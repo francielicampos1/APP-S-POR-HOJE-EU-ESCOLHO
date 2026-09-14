@@ -7,11 +7,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.francielicampos.sohoje.data.AppState
+import com.francielicampos.sohoje.data.EntradaDiario
 
 private val opcoesHumor = listOf("😌 Tranquilo(a)", "😰 Ansioso(a)", "😊 Orgulhoso(a)", "😔 Triste", "🎯 Com vontade")
 
@@ -19,6 +23,7 @@ private val opcoesHumor = listOf("😌 Tranquilo(a)", "😰 Ansioso(a)", "😊 O
 @Composable
 fun DiarioScreen(appState: AppState) {
     var mostrarDialogo by remember { mutableStateOf(false) }
+    var entradaEditando by remember { mutableStateOf<EntradaDiario?>(null) }
 
     Scaffold(
         floatingActionButton = {
@@ -48,9 +53,20 @@ fun DiarioScreen(appState: AppState) {
                     items(appState.entradasDiario, key = { it.id }) { entrada ->
                         Card(Modifier.fillMaxWidth().padding(bottom = 10.dp), shape = RoundedCornerShape(14.dp)) {
                             Column(Modifier.padding(16.dp)) {
-                                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                                    Text(entrada.humor, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-                                    Text(entrada.data.format(AppState.formatoData), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                                Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(entrada.humor, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                                        Spacer(Modifier.width(10.dp))
+                                        Text(entrada.data.format(AppState.formatoData), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                                    }
+                                    Row {
+                                        IconButton(onClick = { entradaEditando = entrada }) {
+                                            Icon(Icons.Filled.Edit, contentDescription = "Editar")
+                                        }
+                                        IconButton(onClick = { appState.removerEntradaDiario(entrada.id) }) {
+                                            Icon(Icons.Filled.Close, contentDescription = "Excluir")
+                                        }
+                                    }
                                 }
                                 Spacer(Modifier.height(6.dp))
                                 Text(entrada.texto, style = MaterialTheme.typography.bodyLarge)
@@ -63,21 +79,35 @@ fun DiarioScreen(appState: AppState) {
     }
 
     if (mostrarDialogo) {
-        DialogoNovaEntrada(
+        DialogoEntradaDiario(
             aoFechar = { mostrarDialogo = false },
             aoSalvar = { texto, humor -> appState.adicionarEntradaDiario(texto, humor); mostrarDialogo = false }
+        )
+    }
+
+    entradaEditando?.let { entrada ->
+        DialogoEntradaDiario(
+            textoInicial = entrada.texto,
+            humorInicial = entrada.humor,
+            aoFechar = { entradaEditando = null },
+            aoSalvar = { texto, humor -> appState.editarEntradaDiario(entrada.id, texto, humor); entradaEditando = null }
         )
     }
 }
 
 @Composable
-private fun DialogoNovaEntrada(aoFechar: () -> Unit, aoSalvar: (String, String) -> Unit) {
-    var texto by remember { mutableStateOf("") }
-    var humorSelecionado by remember { mutableStateOf(opcoesHumor.first()) }
+private fun DialogoEntradaDiario(
+    textoInicial: String = "",
+    humorInicial: String = opcoesHumor.first(),
+    aoFechar: () -> Unit,
+    aoSalvar: (String, String) -> Unit
+) {
+    var texto by remember { mutableStateOf(textoInicial) }
+    var humorSelecionado by remember { mutableStateOf(humorInicial) }
 
     AlertDialog(
         onDismissRequest = aoFechar,
-        title = { Text("Hoje eu estou...") },
+        title = { Text(if (textoInicial.isEmpty()) "Hoje eu estou..." else "Editar entrada") },
         text = {
             Column {
                 LazyRow {

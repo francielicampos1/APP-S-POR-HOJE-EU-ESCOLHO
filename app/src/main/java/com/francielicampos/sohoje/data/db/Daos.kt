@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface GatilhoDao {
@@ -25,6 +26,12 @@ interface DiarioDao {
 
     @Insert
     suspend fun inserir(entrada: EntradaDiarioEntity)
+
+    @Update
+    suspend fun atualizar(entrada: EntradaDiarioEntity)
+
+    @Query("DELETE FROM entradas_diario WHERE id = :id")
+    suspend fun remover(id: Long)
 }
 
 @Dao
